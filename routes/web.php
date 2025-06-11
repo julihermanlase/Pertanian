@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +19,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/admin', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard.index');
-Route::get('/admin/profile', [\App\Http\Controllers\DashboardController::class, 'profile'])->name('dashboard.profile');
+Route::middleware('guest')->group(function () {
+    Route::get('/', [AuthController::class, 'login']);
+    Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('/login', [AuthController::class, 'verify'])->name('auth.verify');
+});
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
+Route::get('/admin', [\App\Http\Controllers\admin\DashboardController::class, 'index'])->name('dashboard.index');
+Route::get('/admin/profile', [\App\Http\Controllers\admin\DashboardController::class, 'profile'])->name('dashboard.profile');
