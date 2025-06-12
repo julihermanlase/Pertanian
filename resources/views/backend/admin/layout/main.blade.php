@@ -43,12 +43,12 @@
                         </a>
                     </li>
                     <li class="{{ request()->is('lahan*') ? 'active' : '' }}">
-                        <a href=""> <!-- Ini menggunakan route lahan.index -->
+                        <a href="{{route('lands.index')}}">
                             <i class="menu-icon fa fa-tractor"></i>Lahan Pertanian
                         </a>
                     </li>
                     <li class="{{ request()->is('tanaman*') ? 'active' : '' }}">
-                        <a href=""> <!-- Ini menggunakan route tanaman.index -->
+                        <a href="{{route('crops.index')}}">
                             <i class="menu-icon fa fa-leaf"></i>Tanaman
                         </a>
                     </li>
@@ -75,39 +75,27 @@
                 <div class="col-sm-7">
                     <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
                     <div class="header-left">
-                        <button class="search-trigger"><i class="fa fa-search"></i></button>
-                        <div class="form-inline">
-                            <form class="search-form">
-                                <input class="form-control mr-sm-2" type="text" placeholder="Search ..."
-                                    aria-label="Search">
-                                <button class="search-close" type="submit"><i class="fa fa-close"></i></button>
-                            </form>
+                        <div class="search-box d-flex align-items-center">
+                            <button class="btn btn-light border-0 p-2" id="btn-search" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <input class="form-control border-0 ml-2" type="text" placeholder="Cari data..." aria-label="Search" id="search-input">
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div class="user-area dropdown float-right">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img class="user-avatar rounded-circle" src="{{asset('assets/images/admin.jpg')}}">
+                            <img class="user-avatar rounded-circle" src="{{ asset('assets/images/admin.jpg') }}">
                         </a>
-                        <div class="user-menu dropdown-menu">
-                            <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
-                            <a class="nav-link" href="#"><i class="fa fa-power -off"></i>Logout</a>
+                        <div class="user-menu dropdown-menu dropdown-menu-right show-on-hover">
+                            <a class="nav-link" href="{{ route('auth.login') }}"><i class="fa fa-sign-in"></i> Login</a>
+                            <a class="nav-link" href="{{ route('auth.logout') }}"><i class="fa fa-power-off"></i> Logout</a>
                         </div>
                     </div>
                 </div>
             </div>
         </header>
-
-        <div class="breadcrumbs">
-            <div class="col-sm-4">
-                <div class="page-header float-left">
-                    <div class="page-title">
-                        <h1>Dashboard</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         @yield('content')
     </div>

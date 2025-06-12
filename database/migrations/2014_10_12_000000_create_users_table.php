@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->enum('role', ['admin', 'petani'])->default('petani');
+            $table->softDeletes();
             $table->unsignedBigInteger('user_created_id')->nullable();
             $table->string('user_created_name')->nullable();
             $table->unsignedBigInteger('user_updated_id')->nullable();

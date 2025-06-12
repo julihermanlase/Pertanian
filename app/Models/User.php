@@ -2,15 +2,22 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use SoftDeletes;
+
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_PETANI = 'petani';
+
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +37,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * The attributes that should be hidden for arrays and JSON.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -39,6 +48,8 @@ class User extends Authenticatable
 
     /**
      * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -46,59 +57,58 @@ class User extends Authenticatable
         'role' => 'string',
     ];
 
-    /**
-     * Relations to the user who created this user.
-     */
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'user_created_id');
     }
 
-    /**
-     * Relations to the user who last updated this user.
-     */
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'user_updated_id');
     }
 
-    /**
-     * Users created by this user.
-     */
     public function createdUsers()
     {
         return $this->hasMany(User::class, 'user_created_id');
     }
 
-    /**
-     * Users updated by this user.
-     */
     public function updatedUsers()
     {
         return $this->hasMany(User::class, 'user_updated_id');
     }
 
-    /**
-     * Check if the user has 'admin' role.
-     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function scopeAdmin($query)
+    {
+        return $query->where('role', self::ROLE_ADMIN);
+    }
+
+    public function scopePetani($query)
+    {
+        return $query->where('role', self::ROLE_PETANI);
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 
-    /**
-     * Check if the user has 'petani' role.
-     */
     public function isPetani(): bool
     {
-        return $this->role === 'petani';
+        return $this->role === self::ROLE_PETANI;
     }
 
-    /**
-     * Check if the user is active.
-     */
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function getNameAttribute($value)
+    {
+        return ucwords(strtolower($value));
     }
 }

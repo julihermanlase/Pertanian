@@ -23,21 +23,22 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $credentials['email'])
-            ->where('status', 'active')
+            ->where('status', User::STATUS_ACTIVE)
             ->first();
 
         if (!$user) {
             return back()->with('error', 'Akun tidak aktif atau tidak ditemukan.');
         }
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('dashboard.index');
-            } elseif (Auth::user()->role === 'petani') {
-                return redirect()->route('dashboard.index');
+            $user = Auth::user();
+            if ($user->isAdmin() || $user->isPetani()) {
+                return redirect()->route('dashboard.index')->with('status', 'Selamat datang kembali!');
             }
+
+            return redirect('/');
         }
 
         return back()
@@ -51,6 +52,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('auth.login');
+        return redirect()->route('auth.login')->with('status', 'Anda berhasil logout.');
     }
 }
